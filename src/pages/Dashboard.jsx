@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
   BookOpen, 
@@ -8,20 +9,30 @@ import {
   Calendar,
   Award,
   Clock,
-  Plus
+  Plus,
+  PlusCircle
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import axios from 'axios';
+import CreateAssignmentModal from '../components/Modals/CreateAssignmentModal';
+import CreateCourseModal from '../components/Modals/CreateCourseModal';
+import AddGradeModal from '../components/Modals/AddGradeModal';
+import MarkAttendanceModal from '../components/Modals/MarkAttendanceModal';
 
 const Dashboard = () => {
   const { teacher } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showCreateAssignment, setShowCreateAssignment] = useState(false);
+  const [showCreateCourse, setShowCreateCourse] = useState(false);
+  const [showAddGrade, setShowAddGrade] = useState(false);
+  const [showMarkAttendance, setShowMarkAttendance] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await axios.get('/teacher/dashboard');
+        const response = await axios.get('http://localhost:5000/api/teacher/dashboard');
         setDashboardData(response.data);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -193,7 +204,8 @@ const Dashboard = () => {
       {/* Quick Actions */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <h3 className="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            onClick={() => setShowCreateAssignment(true)}
           <button className="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 group">
             <div className="text-center">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-200">
@@ -205,6 +217,7 @@ const Dashboard = () => {
           </button>
 
           <button className="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-emerald-400 hover:bg-emerald-50 transition-all duration-200 group">
+            onClick={() => setShowMarkAttendance(true)}
             <div className="text-center">
               <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-emerald-200">
                 <Calendar className="w-6 h-6 text-emerald-600" />
@@ -215,6 +228,7 @@ const Dashboard = () => {
           </button>
 
           <button className="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-purple-400 hover:bg-purple-50 transition-all duration-200 group">
+            onClick={() => navigate('/quizzes')}
             <div className="text-center">
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-purple-200">
                 <FileText className="w-6 h-6 text-purple-600" />
@@ -225,12 +239,25 @@ const Dashboard = () => {
           </button>
 
           <button className="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-amber-400 hover:bg-amber-50 transition-all duration-200 group">
+            onClick={() => setShowAddGrade(true)}
+            className="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-red-400 hover:bg-red-50 transition-all duration-200 group">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-red-200">
+                <Award className="w-6 h-6 text-red-600" />
+              </div>
+              <h4 className="font-medium text-gray-900 mb-1">Add Grade</h4>
+              <p className="text-sm text-gray-600">Grade student assignments</p>
+            </div>
+          </button>
+
+          <button 
+            onClick={() => setShowCreateCourse(true)}
             <div className="text-center">
               <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-amber-200">
-                <BookOpen className="w-6 h-6 text-amber-600" />
+                <PlusCircle className="w-6 h-6 text-amber-600" />
               </div>
-              <h4 className="font-medium text-gray-900 mb-1">Upload Resource</h4>
-              <p className="text-sm text-gray-600">Share learning materials</p>
+              <h4 className="font-medium text-gray-900 mb-1">Add Course</h4>
+              <p className="text-sm text-gray-600">Create a new course</p>
             </div>
           </button>
         </div>
@@ -274,6 +301,35 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      {showCreateAssignment && (
+        <CreateAssignmentModal
+          isOpen={showCreateAssignment}
+          onClose={() => setShowCreateAssignment(false)}
+        />
+      )}
+
+      {showCreateCourse && (
+        <CreateCourseModal
+          isOpen={showCreateCourse}
+          onClose={() => setShowCreateCourse(false)}
+        />
+      )}
+
+      {showAddGrade && (
+        <AddGradeModal
+          isOpen={showAddGrade}
+          onClose={() => setShowAddGrade(false)}
+        />
+      )}
+
+      {showMarkAttendance && (
+        <MarkAttendanceModal
+          isOpen={showMarkAttendance}
+          onClose={() => setShowMarkAttendance(false)}
+        />
+      )}
     </div>
   );
 };

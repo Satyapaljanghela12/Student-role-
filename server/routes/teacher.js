@@ -143,6 +143,17 @@ router.get('/dashboard', auth, async (req, res) => {
     
     const averageGrade = totalGrades > 0 ? Math.round(gradeSum / totalGrades) : 0;
 
+    // Get recent submissions (last 7 days)
+    const recentSubmissions = [];
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    
+    assignments.forEach(assignment => {
+      assignment.submissions.forEach(submission => {
+        if (new Date(submission.submittedAt) > weekAgo) {
+          recentSubmissions.push(submission);
+        }
+      });
+    });
     res.json({
       totalClasses: classes.length,
       totalStudents,
@@ -150,11 +161,7 @@ router.get('/dashboard', auth, async (req, res) => {
       averageAttendance,
       averageGrade,
       recentActivity: {
-        newSubmissions: assignments.reduce((sum, assignment) => 
-          sum + assignment.submissions.filter(sub => 
-            new Date(sub.submittedAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-          ).length, 0
-        )
+        newSubmissions: recentSubmissions.length
       }
     });
   } catch (error) {

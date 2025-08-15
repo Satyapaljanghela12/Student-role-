@@ -13,6 +13,7 @@ const attendanceRoutes = require('./routes/attendance');
 const quizRoutes = require('./routes/quiz');
 const resourceRoutes = require('./routes/resource');
 const communicationRoutes = require('./routes/communication');
+const analyticsRoutes = require('./routes/analytics');
 
 dotenv.config();
 
@@ -47,6 +48,7 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/communication', communicationRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
