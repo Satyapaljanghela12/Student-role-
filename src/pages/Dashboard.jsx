@@ -331,6 +331,7 @@ const Dashboard = () => {
         />
       )}
     </div>
+  )
   );
 };
 
